@@ -22,7 +22,7 @@ type ActionEvent = (
 ) => void;
 
 type Props = {
-  scene: SceneDocument;
+  scene: Pick<SceneDocument, 'title' | 'components' | 'actions' | 'references'>;
   onAction: ActionEvent;
   selectedEventId?: string;
 };
@@ -172,8 +172,9 @@ export function MarketOverview({
     action.targetComponentId === series.id,
   );
 
+  const seriesId = series.id;
   function selectEvent(item: MarketEvent) {
-    if (selectAction) onAction(selectAction.id, series.id, item.id);
+    if (selectAction) onAction(selectAction.id, seriesId, item.id);
   }
 
   const narrative = summary.change === null
