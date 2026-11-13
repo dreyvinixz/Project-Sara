@@ -12,7 +12,9 @@
 .market-header h1 {
   margin: 8px 0;
   color: #e6ebe5;
-  font: 500 clamp(24px, 4vw, 35px)/1.2 Manrope, sans-serif;
+  font:
+    500 clamp(24px, 4vw, 35px) / 1.2 Manrope,
+    sans-serif;
 }
 
 .market-header p {
@@ -28,7 +30,9 @@
   border: 1px solid #84ba9c60;
   border-radius: 3px;
   color: #b8dfc3;
-  font: 10px 'DM Mono', monospace;
+  font:
+    10px "DM Mono",
+    monospace;
 }
 
 .market-source-tag.demo {
@@ -53,7 +57,9 @@
 .market-panel h2 {
   margin: 7px 0 13px;
   color: #e0e9e0;
-  font: 500 16px/1.4 Manrope, sans-serif;
+  font:
+    500 16px / 1.4 Manrope,
+    sans-serif;
 }
 
 .market-panel p {
@@ -90,7 +96,7 @@
 }
 
 .market-periods button.active,
-.market-periods button[aria-pressed='true'] {
+.market-periods button[aria-pressed="true"] {
   border-color: #8fc4a3;
   background: #304b37;
   color: #e1f4e3;
@@ -115,7 +121,9 @@
 
 .market-kpis strong {
   color: #e7f1e7;
-  font: 500 21px 'DM Mono', monospace;
+  font:
+    500 21px "DM Mono",
+    monospace;
 }
 
 .market-plot {
@@ -131,7 +139,9 @@
 
 .market-tick {
   fill: #879a89;
-  font: 12px 'DM Mono', monospace;
+  font:
+    12px "DM Mono",
+    monospace;
 }
 
 .market-trend {
@@ -157,7 +167,9 @@
   display: flex;
   justify-content: space-between;
   color: #8c9b8d;
-  font: 10px 'DM Mono', monospace;
+  font:
+    10px "DM Mono",
+    monospace;
 }
 
 .market-plot-note,
@@ -176,7 +188,9 @@
 
 .market-selection small {
   color: #a5cbaa;
-  font: 10px 'DM Mono', monospace;
+  font:
+    10px "DM Mono",
+    monospace;
 }
 
 .market-selection h3 {

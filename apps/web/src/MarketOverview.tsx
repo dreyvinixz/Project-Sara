@@ -7,11 +7,7 @@ import {
   pointsForPeriod,
   summarizePeriod,
 } from './marketData.mjs';
-import type {
-  MarketEvent,
-  MarketPeriod,
-  MarketPoint,
-} from './marketData.mjs';
+import type { MarketEvent, MarketPeriod, MarketPoint } from './marketData.mjs';
 import './market-overview.css';
 
 type SceneComponent = SceneDocument['components'][number];
@@ -73,9 +69,9 @@ function Plot({
     x: left + (index * plotWidth) / Math.max(points.length - 1, 1),
     y: top + ((max - point.value) / (max - min)) * plotHeight,
   }));
-  const path = dots.map((point, index) =>
-    `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`,
-  ).join(' ');
+  const path = dots
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
+    .join(' ');
   const area = `${path} L ${dots.at(-1)?.x} ${top + plotHeight} L ${left} ${top + plotHeight} Z`;
 
   return (
@@ -113,39 +109,41 @@ function Plot({
         ))}
         <path d={area} fill="url(#market-area-gradient)" />
         <path d={path} className="market-trend" />
-        {dots.filter((point) => point.eventId).map((point) => (
-          <g key={point.eventId}>
-            <circle
-              className={point.eventId === selectedEventId
-                ? 'market-event-dot selected'
-                : 'market-event-dot'}
-              cx={point.x}
-              cy={point.y}
-              r={point.eventId === selectedEventId ? 7 : 5}
-            />
-          </g>
-        ))}
+        {dots
+          .filter((point) => point.eventId)
+          .map((point) => (
+            <g key={point.eventId}>
+              <circle
+                className={
+                  point.eventId === selectedEventId
+                    ? 'market-event-dot selected'
+                    : 'market-event-dot'
+                }
+                cx={point.x}
+                cy={point.y}
+                r={point.eventId === selectedEventId ? 7 : 5}
+              />
+            </g>
+          ))}
       </svg>
       <div className="market-chart-dates">
         <span>{formatDate(points[0].timestamp)}</span>
-        <span>{formatDate(points.at(-1)?.timestamp ?? points[0].timestamp)}</span>
+        <span>
+          {formatDate(points.at(-1)?.timestamp ?? points[0].timestamp)}
+        </span>
       </div>
     </div>
   );
 }
 
-export function MarketOverview({
-  scene,
-  onAction,
-  selectedEventId,
-}: Props) {
+export function MarketOverview({ scene, onAction, selectedEventId }: Props) {
   const [period, setPeriod] = useState<MarketPeriod>('week');
-  const series = scene.components.find((item) =>
-    item.type === 'time_series',
-  ) as SceneComponent | undefined;
-  const news = scene.components.find((item) =>
-    item.type === 'news_panel',
-  ) as SceneComponent | undefined;
+  const series = scene.components.find((item) => item.type === 'time_series') as
+    | SceneComponent
+    | undefined;
+  const news = scene.components.find((item) => item.type === 'news_panel') as
+    | SceneComponent
+    | undefined;
 
   if (!series || !news) {
     return (
@@ -160,16 +158,17 @@ export function MarketOverview({
   const points = pointsForPeriod(allPoints, period);
   const visibleEvents = eventsInPeriod(allEvents, points);
   const summary = summarizePeriod(points);
-  const source = typeof series.source === 'string'
-    ? series.source
-    : 'Fixture local SARA — valores inventados';
+  const source =
+    typeof series.source === 'string'
+      ? series.source
+      : 'Fixture local SARA — valores inventados';
   const asOf = typeof series.asOf === 'string' ? series.asOf : undefined;
   const demo = series.dataStatus === 'demo';
   const stale = !demo && isOutdated(asOf);
   const selection = visibleEvents.find((item) => item.id === selectedEventId);
-  const selectAction = scene.actions.find((action) =>
-    action.type === 'select' &&
-    action.targetComponentId === series.id,
+  const selectAction = scene.actions.find(
+    (action) =>
+      action.type === 'select' && action.targetComponentId === series.id,
   );
 
   const seriesId = series.id;
@@ -177,12 +176,16 @@ export function MarketOverview({
     if (selectAction) onAction(selectAction.id, seriesId, item.id);
   }
 
-  const narrative = summary.change === null
-    ? 'Não há dados suficientes para calcular a variação do intervalo.'
-    : `No período selecionado, o índice sintético registrou ${summary.direction} de ${Math.abs(summary.change).toFixed(2).replace('.', ',')}% entre a primeira e a última observação. Este é um cálculo ilustrativo, sem relação com preços reais.`;
+  const narrative =
+    summary.change === null
+      ? 'Não há dados suficientes para calcular a variação do intervalo.'
+      : `No período selecionado, o índice sintético registrou ${summary.direction} de ${Math.abs(summary.change).toFixed(2).replace('.', ',')}% entre a primeira e a última observação. Este é um cálculo ilustrativo, sem relação com preços reais.`;
 
   return (
-    <section className="market-dashboard" aria-label="Panorama financeiro demonstrativo">
+    <section
+      className="market-dashboard"
+      aria-label="Panorama financeiro demonstrativo"
+    >
       <header className="market-header">
         <span className="scene-eyebrow">SARA · FINANÇAS · DADOS OFFLINE</span>
         <h1>{scene.title ?? 'Panorama de mercado'}</h1>
@@ -191,8 +194,12 @@ export function MarketOverview({
             ? 'Simulação histórica de maio de 2024: números e eventos inventados. Não são preços, notícias ou recomendações.'
             : 'Dados de fonte externa, com rastreabilidade. Verifique o horário de atualização antes de interpretá-los.'}
         </p>
-        <strong className={demo ? 'market-source-tag demo' : 'market-source-tag'}>
-          {demo ? 'DEMONSTRAÇÃO · NÃO É DADO REAL' : 'DADOS DECLARADOS COMO VERIFICADOS'}
+        <strong
+          className={demo ? 'market-source-tag demo' : 'market-source-tag'}
+        >
+          {demo
+            ? 'DEMONSTRAÇÃO · NÃO É DADO REAL'
+            : 'DADOS DECLARADOS COMO VERIFICADOS'}
         </strong>
         {stale && (
           <p className="market-warning" role="status">
@@ -225,15 +232,19 @@ export function MarketOverview({
           <div className="market-kpis" aria-live="polite">
             <div>
               <span>Último valor sintético</span>
-              <strong>{points.length
-                ? formatNumber(points.at(-1)?.value ?? 0)
-                : 'Indisponível'}</strong>
+              <strong>
+                {points.length
+                  ? formatNumber(points.at(-1)?.value ?? 0)
+                  : 'Indisponível'}
+              </strong>
             </div>
             <div>
               <span>Variação no intervalo</span>
-              <strong>{summary.change === null
-                ? 'N/D'
-                : `${summary.change >= 0 ? '+' : ''}${summary.change.toFixed(2).replace('.', ',')}%`}</strong>
+              <strong>
+                {summary.change === null
+                  ? 'N/D'
+                  : `${summary.change >= 0 ? '+' : ''}${summary.change.toFixed(2).replace('.', ',')}%`}
+              </strong>
             </div>
             <div>
               <span>Observações</span>
@@ -246,18 +257,25 @@ export function MarketOverview({
             title={series.title as string}
           />
           <p className="market-plot-note">
-            {source}. {asOf ? `Data de referência: ${formatDate(asOf)}.` : 'Data não informada.'}
-            {' '}Observações sintéticas incluem fins de semana.
+            {source}.{' '}
+            {asOf
+              ? `Data de referência: ${formatDate(asOf)}.`
+              : 'Data não informada.'}{' '}
+            Observações sintéticas incluem fins de semana.
           </p>
         </article>
 
         <article className="market-panel market-story-panel">
           <span className="scene-eyebrow">EXPLICAÇÃO CONTEXTUAL</span>
           <h2>O que mostra o gráfico?</h2>
-          <p role="status" aria-live="polite">{narrative}</p>
+          <p role="status" aria-live="polite">
+            {narrative}
+          </p>
           {selection ? (
             <div className="market-selection" aria-live="polite">
-              <small>EVENTO SELECIONADO · {formatDate(selection.publishedAt)}</small>
+              <small>
+                EVENTO SELECIONADO · {formatDate(selection.publishedAt)}
+              </small>
               <h3>{selection.title}</h3>
               <p>{selection.summary}</p>
             </div>
@@ -267,30 +285,37 @@ export function MarketOverview({
             </p>
           )}
           <p className="market-speech-note">
-            Texto preparado para futura narração por voz. Associação temporal não implica causalidade.
+            Texto preparado para futura narração por voz. Associação temporal
+            não implica causalidade.
           </p>
         </article>
 
         <article className="market-panel market-timeline-panel">
-          <span className="scene-eyebrow">LINHA DO TEMPO · {demo ? 'EVENTOS SIMULADOS' : 'EVENTOS'}</span>
+          <span className="scene-eyebrow">
+            LINHA DO TEMPO · {demo ? 'EVENTOS SIMULADOS' : 'EVENTOS'}
+          </span>
           <h2>{news.title as string}</h2>
           <div className="market-timeline">
-            {visibleEvents.length ? visibleEvents.map((item) => (
-              <button
-                type="button"
-                className={item.id === selectedEventId
-                  ? 'market-timeline-event active'
-                  : 'market-timeline-event'}
-                key={item.id}
-                aria-pressed={item.id === selectedEventId}
-                onClick={() => selectEvent(item)}
-                disabled={!selectAction}
-              >
-                <span>{formatDate(item.publishedAt)}</span>
-                <strong>{item.title}</strong>
-                <small>{item.source}</small>
-              </button>
-            )) : (
+            {visibleEvents.length ? (
+              visibleEvents.map((item) => (
+                <button
+                  type="button"
+                  className={
+                    item.id === selectedEventId
+                      ? 'market-timeline-event active'
+                      : 'market-timeline-event'
+                  }
+                  key={item.id}
+                  aria-pressed={item.id === selectedEventId}
+                  onClick={() => selectEvent(item)}
+                  disabled={!selectAction}
+                >
+                  <span>{formatDate(item.publishedAt)}</span>
+                  <strong>{item.title}</strong>
+                  <small>{item.source}</small>
+                </button>
+              ))
+            ) : (
               <p className="market-muted" role="status">
                 Não há eventos neste intervalo. Selecione outro período.
               </p>
@@ -326,7 +351,8 @@ export function MarketOverview({
             </p>
           )}
           <p className="market-muted">
-            Sem API em tempo real, credenciais ou chamadas a serviços financeiros.
+            Sem API em tempo real, credenciais ou chamadas a serviços
+            financeiros.
           </p>
         </aside>
       </div>

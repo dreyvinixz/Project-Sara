@@ -14,8 +14,10 @@ export function toUtcTime(value) {
 
 export function sortPoints(points) {
   return [...points]
-    .filter((point) =>
-      Number.isFinite(point.value) && Number.isFinite(toUtcTime(point.timestamp)),
+    .filter(
+      (point) =>
+        Number.isFinite(point.value) &&
+        Number.isFinite(toUtcTime(point.timestamp)),
     )
     .sort((a, b) => toUtcTime(a.timestamp) - toUtcTime(b.timestamp));
 }
