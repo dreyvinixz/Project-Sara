@@ -10,8 +10,9 @@ SARA is an experimental multimodal AI system integration project. The first mile
 
 - `apps/web`: React + TypeScript + Vite, independently started with `npm run dev:web` from the root.
 - `apps/api`: FastAPI, independently started with Uvicorn; `GET /health` is the health probe.
+- `apps/api` provides isolated in-memory demo sessions, deterministic market/neural intent routing, correlation IDs, and server-side validation against the canonical SceneDocument schema.
 - `packages/contracts`: reserved for versioned API/UI contracts. Add shared schemas here rather than coupling app internals.
-- `packages/contracts` provides the canonical SceneDocument v0 and user_action JSON Schemas, an Ajv-based JavaScript validator, TypeScript declarations, and offline fixtures/tests.
+- `packages/contracts` provides the canonical SceneDocument v0 and user_action JSON Schemas, JavaScript and Python validators, TypeScript declarations, and offline fixtures/tests.
 - `.env.example`: local non-secret defaults. Real `.env` files are ignored.
 
 ## Working agreements
@@ -32,3 +33,7 @@ From the root: `npm install`, `npm run dev:web`, `npm run build`, `npm run lint`
 Issue: https://github.com/dreyvinixz/Project-Sara/issues/1
 
 Acceptance targets: local web startup with a landing page; local API startup with `/health` returning 200; no committed secrets; README with requirements and startup instructions; reproducible web build and API startup. Out of scope: public deployment, authentication, and native integrations.
+
+## Sprint 1 issue #4
+
+API routes: `POST /sessions`, `POST /sessions/{id}/intents`, `GET /sessions/{id}`, and `GET /sessions/{id}/result`. Sessions are process-local for the prototype and must not be treated as durable or multi-worker storage. The default provider routes to offline market and neural-network fixtures without an external key. Errors use a stable envelope with a correlation ID; request bodies are not logged.

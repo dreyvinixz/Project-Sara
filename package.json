@@ -5,7 +5,7 @@
   "scripts": {
     "dev:web": "npm --workspace @sara/web run dev",
     "build": "npm --workspace @sara/web run build",
-    "lint": "npm --workspace @sara/web run lint",
+    "lint": "biome lint apps/web/src",
     "typecheck": "npm --workspace @sara/web run typecheck"
   }
 }
