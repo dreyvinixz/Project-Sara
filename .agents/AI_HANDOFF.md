@@ -46,3 +46,7 @@ CI runs on PRs and pushes to main via `.github/workflows/ci.yml`. The web job ch
 ## Sprint 1 issue #5
 
 The web renderer validates SceneDocument v0 before rendering. It uses React text nodes and SVG/CSS for the allowlisted component types; it never evaluates model-provided code. User interactions are serialized through `POST /sessions/{id}/actions`, bound to the current session and revision, and update the scene without replacing component IDs.
+
+## Sprint 1 issue #6
+
+O `apps/web` oferece ditado push-to-talk pelo Web Speech API quando suportado, transcrição acessível e envio do texto reconhecido pelo mesmo endpoint de intenções usado pelo campo de texto. A leitura da cena usa `speechSynthesis`, começa somente por ação explícita e pode ser interrompida. Encerrar a página aborta reconhecimento e cancela síntese. A aplicação não grava nem envia áudio bruto; disponibilidade e processamento do reconhecimento dependem do navegador. Texto digitado permanece como alternativa.
