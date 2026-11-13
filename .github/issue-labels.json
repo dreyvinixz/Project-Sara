@@ -1,0 +1,67 @@
+[
+  {
+    "name": "priority: P0",
+    "color": "D73A4A",
+    "description": "Prioridade crítica para a Sprint"
+  },
+  {
+    "name": "priority: P1",
+    "color": "FB8C00",
+    "description": "Prioridade alta, após o caminho crítico"
+  },
+  {
+    "name": "sprint: 01",
+    "color": "6F42C1",
+    "description": "Itens planejados para a Sprint 01"
+  },
+  {
+    "name": "area: infrastructure",
+    "color": "0366D6",
+    "description": "Setup, ferramentas e estrutura do projeto"
+  },
+  {
+    "name": "area: frontend",
+    "color": "1D76DB",
+    "description": "Experiência web e interface de usuário"
+  },
+  {
+    "name": "area: architecture",
+    "color": "7C3AED",
+    "description": "Contratos, arquitetura e desenho de sistema"
+  },
+  {
+    "name": "area: backend",
+    "color": "0E8A16",
+    "description": "API, sessão e orquestração"
+  },
+  {
+    "name": "area: visualization",
+    "color": "C51F99",
+    "description": "Renderer, gráficos e componentes interativos"
+  },
+  {
+    "name": "area: voice",
+    "color": "00A6A6",
+    "description": "Áudio e interação por voz"
+  },
+  {
+    "name": "area: 3d",
+    "color": "9B59B6",
+    "description": "Experiências tridimensionais"
+  },
+  {
+    "name": "area: finance",
+    "color": "219653",
+    "description": "Dados financeiros, notícias e dashboards"
+  },
+  {
+    "name": "area: quality",
+    "color": "B08800",
+    "description": "Testes, CI e segurança"
+  },
+  {
+    "name": "area: documentation",
+    "color": "667085",
+    "description": "Documentação e validação de experiência"
+  }
+]

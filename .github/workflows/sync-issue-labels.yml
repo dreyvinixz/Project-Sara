@@ -1,0 +1,51 @@
+name: Sync issue label colors
+
+on:
+  push:
+    branches:
+      - planning/sprint-01-issues
+    paths:
+      - .github/issue-labels.json
+      - .github/workflows/sync-issue-labels.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sync-labels:
+    name: Create or recolor labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Synchronize label palette
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r item; do
+            name="$(jq -r '.name' <<< "$item")"
+            color="$(jq -r '.color' <<< "$item")"
+            description="$(jq -r '.description' <<< "$item")"
+            encoded_name="$(jq -rn --arg name "$name" '$name | @uri')"
+            endpoint="repos/${GITHUB_REPOSITORY}/labels/${encoded_name}"
+
+            if gh api "$endpoint" >/dev/null 2>&1; then
+              gh api -X PATCH "$endpoint" \
+                -f new_name="$name" \
+                -f color="$color" \
+                -f description="$description" >/dev/null
+              echo "Updated label: $name (#$color)"
+            else
+              gh api -X POST "repos/${GITHUB_REPOSITORY}/labels" \
+                -f name="$name" \
+                -f color="$color" \
+                -f description="$description" >/dev/null
+              echo "Created label: $name (#$color)"
+            fi
+          done < <(jq -c '.[]' .github/issue-labels.json)
