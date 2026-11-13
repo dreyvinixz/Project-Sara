@@ -37,3 +37,7 @@ Acceptance targets: local web startup with a landing page; local API startup wit
 ## Sprint 1 issue #4
 
 API routes: `POST /sessions`, `POST /sessions/{id}/intents`, `GET /sessions/{id}`, and `GET /sessions/{id}/result`. Sessions are process-local for the prototype and must not be treated as durable or multi-worker storage. The default provider routes to offline market and neural-network fixtures without an external key. Errors use a stable envelope with a correlation ID; request bodies are not logged.
+
+## Sprint 1 issue #9
+
+CI runs on PRs and pushes to main via `.github/workflows/ci.yml`. The web job checks lint, typecheck, SceneDocument tests, build, compiled-output smoke and npm high-severity audit; the Python job runs Ruff lint, API/contract tests, changed-file format checks and a lightweight tracked-file secret guard. Dependabot and PR dependency review are configured. The formatter only checks files changed since the branch merge-base to avoid touching Codex's issue #5 renderer work. Local reproduction and security/permission policy are in README.
