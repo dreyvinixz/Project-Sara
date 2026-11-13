@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "0.0",
+  "sessionId": "demo_market",
+  "revision": 0,
+  "title": "Resumo do mercado — dados demonstrativos",
+  "components": [
+    {
+      "id": "intro",
+      "type": "text",
+      "content": "Cena offline com valores e eventos fictícios. Não representa cotação, notícia ou recomendação atual."
+    },
+    {
+      "id": "index",
+      "type": "time_series",
+      "title": "Índice ilustrativo (sem unidade financeira real)",
+      "unit": "pontos simulados",
+      "dataStatus": "demo",
+      "asOf": "2024-05-08T17:00:00Z",
+      "points": [
+        {
+          "timestamp": "2024-05-06T17:00:00Z",
+          "value": 100
+        },
+        {
+          "timestamp": "2024-05-07T17:00:00Z",
+          "value": 102,
+          "eventId": "event_a"
+        },
+        {
+          "timestamp": "2024-05-08T17:00:00Z",
+          "value": 99,
+          "eventId": "event_b"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "type": "news_panel",
+      "title": "Eventos simulados (não são notícias)",
+      "dataStatus": "demo",
+      "items": [
+        {
+          "id": "event_a",
+          "title": "Evento fictício A",
+          "summary": "Exemplo para testar seleção contextual de um evento no gráfico.",
+          "source": "Fixture local",
+          "publishedAt": "2024-05-07T17:00:00Z"
+        },
+        {
+          "id": "event_b",
+          "title": "Evento fictício B",
+          "summary": "Segundo evento inventado para validar atualização da explicação.",
+          "source": "Fixture local",
+          "publishedAt": "2024-05-08T17:00:00Z"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "select_market_event",
+      "type": "select",
+      "targetComponentId": "index"
+    },
+    {
+      "id": "open_b3",
+      "type": "navigate",
+      "referenceId": "b3_portal"
+    }
+  ],
+  "references": [
+    {
+      "id": "b3_portal",
+      "title": "Portal oficial da B3 — contexto externo, não é fonte dos exemplos fictícios",
+      "url": "https://www.b3.com.br/"
+    }
+  ]
+}
