@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.orchestrator import DemoSceneProvider, SceneProvider, load_scene
-from app.scene_validation import validate_scene_document
+from app.scene_validation import validate_scene_document, validate_user_action
 from app.session_store import SessionStore
 
 logger = logging.getLogger("sara.api")
@@ -30,6 +30,17 @@ provider: SceneProvider = DemoSceneProvider()
 class IntentRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     intent: str = Field(min_length=1, max_length=2000)
+
+
+class UserActionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+    schemaVersion: str = Field(alias="schemaVersion")
+    type: str
+    sessionId: str = Field(alias="sessionId")
+    sceneRevision: int = Field(alias="sceneRevision")
+    actionId: str = Field(alias="actionId")
+    componentId: str = Field(alias="componentId")
+    value: str | float | bool | None = None
 
 
 def error_response(request: Request, status: int, code: str, message: str) -> JSONResponse:
@@ -121,3 +132,47 @@ def submit_intent(session_id: str, request: IntentRequest, http_request: Request
     session.last_intent = request.intent.strip()
     logger.info("scene_presented correlation_id=%s session_id=%s revision=%s", http_request.state.correlation_id, session.id, session.revision)
     return {"sessionId": session.id, "revision": session.revision, "scene": deepcopy(scene)}
+
+
+@app.post("/sessions/{session_id}/actions", tags=["sessions"])
+def submit_action(session_id: str, action_request: UserActionRequest, http_request: Request):
+    session = sessions.get(session_id)
+    if session is None:
+        error_response_for_missing_session(session_id)
+    if session.scene is None:
+        return error_response(http_request, 409, "scene_not_ready", "Inicie uma intenção antes de interagir com a cena.")
+
+    action = action_request.model_dump(by_alias=True, exclude_none=True)
+    validation_errors = validate_user_action(action, session.scene)
+    if validation_errors:
+        return error_response(http_request, 422, "invalid_action", "A interação não corresponde à cena atual.")
+
+    updated_scene = deepcopy(session.scene)
+    definition = next(item for item in updated_scene["actions"] if item["id"] == action["actionId"])
+    navigation = None
+    if definition["type"] == "navigate":
+        reference = next(item for item in updated_scene["references"] if item["id"] == definition["referenceId"])
+        navigation = {"url": reference["url"], "title": reference["title"]}
+    elif definition["type"] == "adjust":
+        control = next((item for item in updated_scene["components"] if item["type"] == "control" and item["actionId"] == definition["id"]), None)
+        value = action.get("value")
+        if control is None or isinstance(value, bool) or not isinstance(value, (int, float)) or not control["min"] <= value <= control["max"]:
+            return error_response(http_request, 422, "invalid_action_value", "O valor da interação está fora dos limites do controle.")
+        target = next((item for item in updated_scene["components"] if item["id"] == definition["targetComponentId"]), None)
+        if target is None or target["type"] != "scene_3d" or not target["weights"] or not target["weights"][0] or not target["weights"][0][0] or not -10 <= value <= 10:
+            return error_response(http_request, 422, "unsupported_action_target", "Este controle não pode ajustar o componente solicitado.")
+        target["weights"][0][0][0] = value
+        control["value"] = value
+
+    updated_scene["revision"] += 1
+    validation_errors = validate_scene_document(updated_scene)
+    if validation_errors:
+        logger.error("scene_update_failed correlation_id=%s", http_request.state.correlation_id)
+        return error_response(http_request, 500, "scene_update_failed", "Não foi possível atualizar a cena.")
+    session.scene = updated_scene
+    session.revision = updated_scene["revision"]
+    logger.info("user_action_applied correlation_id=%s session_id=%s action_id=%s revision=%s", http_request.state.correlation_id, session.id, definition["id"], session.revision)
+    response = {"sessionId": session.id, "revision": session.revision, "scene": deepcopy(updated_scene), "event": action}
+    if navigation:
+        response["navigation"] = navigation
+    return response

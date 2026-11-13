@@ -90,6 +90,50 @@ class SessionApiTests(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json()["sessionId"], session_id)
 
+    def test_structured_actions_update_revisions_and_return_navigation_targets(self):
+        session_id = self.client.post("/sessions").json()["sessionId"]
+        self.client.post(f"/sessions/{session_id}/intents", json={"intent": "rede neural"})
+        adjusted = self.client.post(f"/sessions/{session_id}/actions", json={
+            "schemaVersion": "0.0", "type": "user_action", "sessionId": session_id,
+            "sceneRevision": 0, "actionId": "adjust_network", "componentId": "network", "value": 0.7,
+        })
+        self.assertEqual(adjusted.status_code, 200)
+        self.assertEqual(adjusted.json()["scene"]["revision"], 1)
+        self.assertEqual(adjusted.json()["event"]["actionId"], "adjust_network")
+        self.assertEqual(adjusted.json()["event"]["componentId"], "network")
+        network = next(item for item in adjusted.json()["scene"]["components"] if item["type"] == "scene_3d")
+        self.assertEqual(network["weights"][0][0][0], 0.7)
+        self.assertEqual(validate_scene_document(adjusted.json()["scene"]), [])
+
+        select_id = self.client.post("/sessions").json()["sessionId"]
+        self.client.post(f"/sessions/{select_id}/intents", json={"intent": "mercado"})
+        selected = self.client.post(f"/sessions/{select_id}/actions", json={
+            "schemaVersion": "0.0", "type": "user_action", "sessionId": select_id,
+            "sceneRevision": 0, "actionId": "select_market_event", "componentId": "index", "value": "event_a",
+        })
+        self.assertEqual(selected.status_code, 200)
+        self.assertEqual(selected.json()["event"]["actionId"], "select_market_event")
+        self.assertEqual(selected.json()["event"]["componentId"], "index")
+        self.assertEqual(selected.json()["event"]["value"], "event_a")
+
+        market_id = self.client.post("/sessions").json()["sessionId"]
+        self.client.post(f"/sessions/{market_id}/intents", json={"intent": "mercado"})
+        navigate = self.client.post(f"/sessions/{market_id}/actions", json={
+            "schemaVersion": "0.0", "type": "user_action", "sessionId": market_id,
+            "sceneRevision": 0, "actionId": "open_b3", "componentId": "index",
+        })
+        self.assertEqual(navigate.status_code, 200)
+        self.assertEqual(navigate.json()["navigation"]["url"], "https://www.b3.com.br/")
+
+    def test_rejects_stale_or_out_of_range_user_actions(self):
+        session_id = self.client.post("/sessions").json()["sessionId"]
+        self.client.post(f"/sessions/{session_id}/intents", json={"intent": "rede neural"})
+        base = {"schemaVersion": "0.0", "type": "user_action", "sessionId": session_id, "sceneRevision": 0, "actionId": "adjust_network", "componentId": "network", "value": 0.7}
+        stale = self.client.post(f"/sessions/{session_id}/actions", json={**base, "sceneRevision": 5})
+        self.assertEqual(stale.status_code, 422)
+        invalid_range = self.client.post(f"/sessions/{session_id}/actions", json={**base, "value": 4})
+        self.assertEqual(invalid_range.status_code, 422)
+
 
 if __name__ == "__main__":
     unittest.main()

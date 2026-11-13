@@ -33,7 +33,7 @@ uvicorn app.main:app --app-dir apps/api --reload --host 127.0.0.1 --port 8000
 
 Check the API at `http://127.0.0.1:8000/health`; interactive API docs are at `/docs`.
 
-The API also exposes `POST /sessions`, `POST /sessions/{id}/intents`, `GET /sessions/{id}`, and `GET /sessions/{id}/result`. The initial provider routes market and neural-network demonstration intents to offline fixtures; unsupported intents return a structured error.
+The API also exposes `POST /sessions`, `POST /sessions/{id}/intents`, `POST /sessions/{id}/actions`, `GET /sessions/{id}`, and `GET /sessions/{id}/result`. The initial provider routes market and neural-network demonstration intents to offline fixtures; unsupported intents return a structured error. The web app validates and renders the scenes and sends typed interactions back to the API.
 
 Run API tests from the repository root with:
 
