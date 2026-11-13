@@ -1,0 +1,65 @@
+.scene-renderer {
+  width: 100%;
+  max-width: 920px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  text-align: left;
+}
+.rendered-scene-title,
+.scene-text-card,
+.network-card,
+.renderer-fallback { grid-column: 1 / -1; }
+.rendered-scene-title h1 { margin: 8px 0 0; font: 500 clamp(25px, 4vw, 38px)/1.2 Manrope, sans-serif; letter-spacing: -.04em; color: #e6ebe5; }
+.scene-eyebrow { color: #91b49a; font: 9px 'DM Mono', monospace; letter-spacing: .13em; }
+.scene-card,
+.scene-text-card,
+.renderer-fallback,
+.control-card { min-width: 0; padding: 17px; border: 1px solid #ffffff15; border-radius: 4px; background: #161d19dd; color: #dfe6de; }
+.scene-card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.scene-card-heading h2,
+.scene-text-card h2 { margin: 6px 0 0; font: 500 17px/1.35 Manrope, sans-serif; color: #e2e9e1; }
+.scene-text-card p,
+.scene-card-description,
+.renderer-fallback p { color: #9da89e; font-size: 12px; line-height: 1.7; }
+.scene-card-description { margin: 10px 0 0; }
+.chart-unit,
+.network-preset { color: #8d9c8e; font: 9px 'DM Mono', monospace; text-transform: uppercase; }
+.series-chart { display: block; width: 100%; margin-top: 12px; overflow: visible; }
+.chart-gridline { fill: none; stroke: #ffffff13; stroke-width: 1; }
+.chart-line { fill: none; stroke: #a4d2a6; stroke-width: 2; }
+.chart-point { fill: #142019; stroke: #a4d2a6; stroke-width: 2; }
+.chart-point.is-selected { fill: #d6e6a2; stroke: #d6e6a2; }
+.chart-axis-labels { display: flex; justify-content: space-between; color: #7e8b7f; font: 9px 'DM Mono', monospace; }
+.chart-event-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; padding: 0; border: 0; }
+.chart-event-actions legend { margin-bottom: 6px; color: #829183; font: 9px 'DM Mono', monospace; text-transform: uppercase; }
+.chart-event-actions button { padding: 6px 8px; border: 1px solid #ffffff20; border-radius: 3px; background: #18231b; color: #b8c8b9; font-size: 10px; cursor: pointer; }
+.chart-event-actions button[aria-pressed='true'] { border-color: #a4d2a6; color: #d6e6a2; }
+.news-list { display: grid; gap: 12px; margin-top: 14px; }
+.news-item { padding-top: 12px; border-top: 1px solid #ffffff10; }
+.news-date { color: #809382; font: 9px 'DM Mono', monospace; }
+.news-item h3 { margin: 7px 0 3px; font-size: 12px; font-weight: 600; }
+.news-item p { margin: 0; color: #9da89e; font-size: 11px; line-height: 1.55; }
+.news-source { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; color: #78877a; font-size: 9px; }
+.news-source a { color: #a5cfa6; text-decoration: none; }
+.news-source a:hover { text-decoration: underline; }
+.network-diagram { display: block; width: 100%; margin-top: 8px; }
+.network-edge { opacity: .7; }
+.network-edge.positive { stroke: #91c5a0; }
+.network-edge.negative { stroke: #c68e83; }
+.network-node { fill: #23352a; stroke: #a5d1a6; stroke-width: 1.5; }
+.network-layer-label { fill: #819083; font: 8px 'DM Mono', monospace; }
+.network-activation { margin: 0; color: #839286; font: 9px 'DM Mono', monospace; text-transform: uppercase; }
+.control-card label { display: flex; justify-content: space-between; gap: 12px; color: #cfd9cf; font-size: 11px; }
+.control-card output { color: #a8d3a9; font: 11px 'DM Mono', monospace; }
+.control-card input { display: block; width: 100%; margin-top: 13px; accent-color: #98c99e; }
+.scene-action-button { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 15px; border: 1px solid #ffffff20; border-radius: 4px; background: #18231b; color: #cfe0cf; cursor: pointer; }
+.scene-action-button:hover { border-color: #9bc99c; }
+.renderer-fallback { color: #c1c9c1; }
+.api-error { color: #f0a69a; font-size: 11px; line-height: 1.5; }
+@media (max-width: 760px) {
+  .scene-renderer { grid-template-columns: minmax(0, 1fr); }
+  .scene-card, .scene-text-card, .renderer-fallback, .control-card { grid-column: 1; }
+  .network-diagram { max-height: 220px; }
+}

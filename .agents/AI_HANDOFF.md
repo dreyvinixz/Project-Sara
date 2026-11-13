@@ -11,6 +11,7 @@ SARA is an experimental multimodal AI system integration project. The first mile
 - `apps/web`: React + TypeScript + Vite, independently started with `npm run dev:web` from the root.
 - `apps/api`: FastAPI, independently started with Uvicorn; `GET /health` is the health probe.
 - `apps/api` provides isolated in-memory demo sessions, deterministic market/neural intent routing, correlation IDs, and server-side validation against the canonical SceneDocument schema.
+- `apps/web/src/SceneRenderer.tsx` validates and renders allowlisted text, news, time-series, feedforward-network, and control components; interactions use the API `user_action` endpoint.
 - `packages/contracts`: reserved for versioned API/UI contracts. Add shared schemas here rather than coupling app internals.
 - `packages/contracts` provides the canonical SceneDocument v0 and user_action JSON Schemas, JavaScript and Python validators, TypeScript declarations, and offline fixtures/tests.
 - `.env.example`: local non-secret defaults. Real `.env` files are ignored.
@@ -41,3 +42,7 @@ API routes: `POST /sessions`, `POST /sessions/{id}/intents`, `GET /sessions/{id}
 ## Sprint 1 issue #9
 
 CI runs on PRs and pushes to main via `.github/workflows/ci.yml`. The web job checks lint, typecheck, SceneDocument tests, build, compiled-output smoke and npm high-severity audit; the Python job runs Ruff lint, API/contract tests, changed-file format checks and a lightweight tracked-file secret guard. Dependabot and PR dependency review are configured. The formatter only checks files changed since the branch merge-base to avoid touching Codex's issue #5 renderer work. Local reproduction and security/permission policy are in README.
+
+## Sprint 1 issue #5
+
+The web renderer validates SceneDocument v0 before rendering. It uses React text nodes and SVG/CSS for the allowlisted component types; it never evaluates model-provided code. User interactions are serialized through `POST /sessions/{id}/actions`, bound to the current session and revision, and update the scene without replacing component IDs.
