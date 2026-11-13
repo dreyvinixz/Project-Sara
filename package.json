@@ -1,0 +1,11 @@
+{
+  "name": "project-sara",
+  "private": true,
+  "workspaces": ["apps/web", "packages/contracts"],
+  "scripts": {
+    "dev:web": "npm --workspace @sara/web run dev",
+    "build": "npm --workspace @sara/web run build",
+    "lint": "npm --workspace @sara/web run lint",
+    "typecheck": "npm --workspace @sara/web run typecheck"
+  }
+}
