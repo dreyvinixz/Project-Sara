@@ -1,1 +1,10 @@
-{"name":"@sara/contracts","private":true,"version":"0.1.0","type":"module","description":"Versioned contracts shared by SARA applications; reserved for future schemas."}
+{
+  "name": "@sara/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Versioned contracts shared by SARA applications.",
+  "exports": { ".": "./index.mjs" },
+  "scripts": { "test": "node --test" },
+  "dependencies": { "ajv": "^8.20.0" }
+}

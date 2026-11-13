@@ -11,6 +11,7 @@ SARA is an experimental multimodal AI system integration project. The first mile
 - `apps/web`: React + TypeScript + Vite, independently started with `npm run dev:web` from the root.
 - `apps/api`: FastAPI, independently started with Uvicorn; `GET /health` is the health probe.
 - `packages/contracts`: reserved for versioned API/UI contracts. Add shared schemas here rather than coupling app internals.
+- `packages/contracts` provides the canonical SceneDocument v0 and user_action JSON Schemas, an Ajv-based JavaScript validator, TypeScript declarations, and offline fixtures/tests.
 - `.env.example`: local non-secret defaults. Real `.env` files are ignored.
 
 ## Working agreements
