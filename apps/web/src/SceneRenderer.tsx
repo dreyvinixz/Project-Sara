@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './renderer.css';
+import { MarketOverview } from './MarketOverview';
 
 type JsonRecord = Record<string, unknown>;
 type SceneComponent = JsonRecord & { id: string; type: string };
@@ -128,6 +129,8 @@ function stableNodeKey(componentId: string, kind: string, ...positions: number[]
 }
 
 export function SceneRenderer({ scene, onAction, selectedEventId }: { scene: Scene; onAction: ActionEvent; selectedEventId?: string }) {
+  const isMarketScene = scene.components.some((component) => component.type === 'time_series') && scene.components.some((component) => component.type === 'news_panel');
+  if (isMarketScene) return <MarketOverview scene={scene} onAction={onAction} selectedEventId={selectedEventId} />;
   return <section className="scene-renderer" aria-label={scene.title ?? 'Cena interativa'}>
     {scene.title && <header className="rendered-scene-title"><span className="scene-eyebrow">SCENEDOCUMENT V0 · REVISÃO ATUAL</span><h1>{scene.title}</h1></header>}
     {scene.components.map((component) => {

@@ -70,6 +70,16 @@ Format checks only inspect source files touched since the common ancestor of thi
 
 **Security scope:** The credential guard detects common signatures in tracked files but is not a comprehensive security audit; rotate any secret that was ever committed. Dependency Review is opt-in because the GitHub dependency graph is currently not enabled on this repository; enable it before setting `DEPENDENCY_REVIEW_ENABLED=true`. Ruff starts with the Python E4/E7/E9/F baseline; extended style rules for legacy code remain a separate cleanup. Only high/critical npm findings fail `npm audit`; moderate advisories still need review. A green pipeline is a baseline, not a production security certification.
 
+## Market overview demonstration (Sprint 1 issue #8)
+
+Ask SARA **"O que aconteceu na bolsa?"** or choose **"Explorar o mercado"**. The deterministic API serves `packages/contracts/fixtures/market-overview.json`; the web renders a specialized market workspace with 7-day, 14-day and full-series ranges, percent variation, synthetic event timeline, contextual explanation and source panel.
+
+**Important:** All sample prices, events, dates and headlines in the fixture are fabricated, not B3 quotes or published news. The B3 link is an *external contextual reference*, **not** a source for these fabricated values. No live market/news provider, investment recommendations, API key or external request is used in this Sprint.
+
+To switch to verified market data in a later sprint, introduce a separate provider adapter that returns `SceneDocument v0` with `dataStatus: 'verified'`, `asOf`, `source`, and an HTTPS `referenceId` for the series and every news item. Fail closed on invalid/unavailable data; never silently substitute an offline fixture while labeling it live. The interface warns when verified data is older than 24 hours or missing a timestamp. The textual context is prepared for optional future speech synthesis.
+
+Reproduce the deterministic market tests with `npm run test:web` after `npm run build`. The helpers live in `apps/web/src/marketData.mjs`.
+
 ## Repository map
 
 - `apps/web`: React, TypeScript, and Vite user interface.
