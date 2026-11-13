@@ -53,7 +53,7 @@ def check_format(language: str) -> int:
             and Path(file).suffix in WEB_EXTENSIONS
             and (ROOT / file).is_file()
         ]
-        command = ["npm", "exec", "--", "biome", "format", "--check"]
+        command = ["npm", "exec", "--", "biome", "format"]
     else:
         files = [
             file
