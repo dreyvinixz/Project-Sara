@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { validateSceneDocument, type SceneDocument } from '@sara/contracts';
 import { SceneRenderer } from './SceneRenderer';
+import { createRecognition, sceneNarration, type Recognition } from './voice';
 import './style.css';
 import './accessibility.css';
 
@@ -35,11 +36,31 @@ function App() {
   const [prompt, setPrompt] = useState('');
   const [apiError, setApiError] = useState('');
   const [selectedEventId, setSelectedEventId] = useState('');
+  const [listening, setListening] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState('');
+  const [voiceError, setVoiceError] = useState('');
+  const [narrating, setNarrating] = useState(false);
+  const recognitionRef = useRef<Recognition | null>(null);
+  const voiceTextRef = useRef('');
+  const submitVoiceRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const sessionRef = useRef('');
   const sceneRef = useRef<Scene | null>(null);
   const actionQueue = useRef<Promise<void>>(Promise.resolve());
   const copy = stateCopy[sessionState];
+
+  useEffect(() => {
+    const stopAudio = () => {
+      recognitionRef.current?.abort();
+      recognitionRef.current = null;
+      window.speechSynthesis?.cancel();
+    };
+    window.addEventListener('pagehide', stopAudio);
+    return () => {
+      window.removeEventListener('pagehide', stopAudio);
+      stopAudio();
+    };
+  }, []);
 
   function installScene(candidate: unknown) {
     const validation = validateSceneDocument(candidate);
@@ -80,6 +101,12 @@ function App() {
   }, []);
 
   async function startIntent(intent = prompt) {
+    submitVoiceRef.current = false;
+    recognitionRef.current?.abort();
+    recognitionRef.current = null;
+    setListening(false);
+    window.speechSynthesis?.cancel();
+    setNarrating(false);
     const activeSession = sessionRef.current;
     if (!activeSession || !intent.trim()) return;
     setApiError('');
@@ -93,6 +120,99 @@ function App() {
       setApiError(error instanceof Error ? error.message : stateCopy.error.detail);
       setSessionState('error');
     }
+  }
+
+  function startListening() {
+    window.speechSynthesis?.cancel();
+    setNarrating(false);
+    const recognition = createRecognition();
+    if (!recognition) {
+      setVoiceError('Ditado por voz não está disponível neste navegador. Você ainda pode escrever sua ideia.');
+      return;
+    }
+    setVoiceError('');
+    setVoiceStatus('O navegador pode solicitar permissão para usar o microfone.');
+    voiceTextRef.current = '';
+    submitVoiceRef.current = true;
+    recognition.onresult = (event) => {
+      let interim = '';
+      let finalText = '';
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        if (result.isFinal) finalText += result[0].transcript;
+        else interim += result[0].transcript;
+      }
+      if (finalText) voiceTextRef.current = `${voiceTextRef.current} ${finalText}`.trim();
+      const caption = `${voiceTextRef.current} ${interim}`.trim();
+      setPrompt(caption);
+      setVoiceStatus(caption ? `Transcrição: ${caption}` : 'Estou ouvindo. Fale sua ideia.');
+    };
+    recognition.onerror = (event) => {
+      submitVoiceRef.current = false;
+      setListening(false);
+      const reason = event.error === 'not-allowed' || event.error === 'service-not-allowed'
+        ? 'Permissão de microfone negada. Você pode escrever sua ideia.'
+        : event.error === 'audio-capture'
+          ? 'Não foi possível acessar um microfone. Você pode escrever sua ideia.'
+          : 'O ditado foi interrompido. Você pode tentar novamente ou escrever sua ideia.';
+      setVoiceError(reason);
+      setVoiceStatus('');
+    };
+    recognition.onend = () => {
+      recognitionRef.current = null;
+      setListening(false);
+      const phrase = voiceTextRef.current.trim();
+      if (submitVoiceRef.current && phrase) {
+        setPrompt(phrase);
+        setVoiceStatus('Enviando a transcrição para a SARA.');
+        void startIntent(phrase);
+      } else if (submitVoiceRef.current) {
+        setVoiceStatus('Nenhuma fala reconhecida. Você pode escrever sua ideia.');
+      }
+      submitVoiceRef.current = false;
+    };
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+      setListening(true);
+      setVoiceStatus('Estou ouvindo. Fale sua ideia.');
+    } catch {
+      recognitionRef.current = null;
+      submitVoiceRef.current = false;
+      setVoiceError('Não foi possível iniciar o microfone. Você pode escrever sua ideia.');
+      setVoiceStatus('');
+    }
+  }
+
+  function stopListening() {
+    submitVoiceRef.current = true;
+    recognitionRef.current?.stop();
+  }
+
+  function narrateScene() {
+    if (!scene) return;
+    if (!('speechSynthesis' in window)) {
+      setVoiceError('Leitura em voz alta não está disponível neste navegador.');
+      return;
+    }
+    const text = sceneNarration(scene);
+    if (!text) {
+      setVoiceError('Esta cena ainda não tem texto para narrar.');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.onstart = () => setNarrating(true);
+    utterance.onend = () => setNarrating(false);
+    utterance.onerror = () => { setNarrating(false); setVoiceError('Não foi possível reproduzir a narração.'); };
+    setVoiceError('');
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function cancelNarration() {
+    window.speechSynthesis?.cancel();
+    setNarrating(false);
   }
 
   function sendAction(actionId: string, componentId: string, value?: number | string | boolean) {
@@ -136,6 +256,7 @@ function App() {
       <section className="canvas" aria-label="Workspace de cenas">
         <div className="canvas-meta"><span>ESPAÇO DE TRABALHO</span><span className="canvas-index">{scene ? `REVISÃO ${scene.revision}` : 'NOVO ESPAÇO'}</span></div>
         <div className={`canvas-content canvas-${sessionState}`}>
+          {scene && <div className="voice-tools"><button type="button" onClick={narrateScene} disabled={narrating}>Ouvir explicação</button>{narrating && <button type="button" onClick={cancelNarration}>Interromper áudio</button>}</div>}
           {scene ? <><SceneRenderer scene={scene} onAction={sendAction} selectedEventId={selectedEventId} />{apiError && <p className="api-error scene-error" role="alert">{apiError}</p>}</> : <>
             <div className="canvas-orbit" aria-hidden="true"><span className="orbit-core" /><span className="orbit-ring ring-one" /><span className="orbit-ring ring-two" /><span className="orbit-point" /></div>
             <p className="canvas-kicker">UM ESPAÇO PARA SUAS IDEIAS</p>
@@ -166,9 +287,11 @@ function App() {
       <span className="composer-spark" aria-hidden="true">✳</span>
       <label className="sr-only" htmlFor="idea-input">Escreva uma ideia para explorar</label>
       <input ref={inputRef} id="idea-input" value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Uma ideia, pergunta ou algo que quer explorar..." disabled={!sessionId || isBusy} />
+      <button className="voice-button" type="button" onClick={listening ? stopListening : startListening} disabled={!sessionId || isBusy} aria-pressed={listening}>{listening ? 'Parar microfone' : 'Falar'}</button>
       <span className="enter-hint">↵</span>
       <button type="submit" aria-label="Adicionar ideia ao workspace" disabled={!sessionId || isBusy || !prompt.trim()}>Explorar <span aria-hidden="true">↗</span></button>
     </form>
+    <p className="voice-feedback" aria-live="polite">{voiceError || voiceStatus}</p>
     <footer className="page-footer"><span>SARA <i>·</i> ESPAÇO DE EXPLORAÇÃO</span><span>FEITO PARA PENSAR DIFERENTE</span></footer>
   </main>;
 }
