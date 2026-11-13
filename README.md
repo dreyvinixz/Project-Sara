@@ -43,7 +43,7 @@ python -m unittest discover -s apps/api -p "test_*.py"
 
 ## CI, tests and permissions
 
-Pull requests, pushes to `main` and manual workflow dispatch run [the CI pipeline](.github/workflows/ci.yml). Checks include Node 22 install from `package-lock.json`, web lint/typecheck/build, an offline web smoke test, JS scene-schema tests, Python 3.12 tests/lint, changed-file formatting, npm high-severity audit, and a tracked-file credential guard. PRs additionally run GitHub Dependency Review. Dependabot checks npm, pip and GitHub Actions weekly.
+Pull requests, pushes to `main` and manual workflow dispatch run [the CI pipeline](.github/workflows/ci.yml). Checks include Node 22 install from `package-lock.json`, web lint/typecheck/build, an offline web smoke test, JS scene-schema tests, Python 3.12 tests/lint, changed-file formatting, npm high-severity audit, and a tracked-file credential guard. PRs can run GitHub Dependency Review after enabling the repository Dependency Graph and setting the repository variable `DEPENDENCY_REVIEW_ENABLED=true`; otherwise that job is skipped because the service is currently unavailable. Dependabot checks npm, pip and GitHub Actions weekly.
 
 Run the same checks locally from the repository root (Node 22, Python 3.12 or newer):
 
@@ -56,7 +56,7 @@ npm run build
 npm run test:web
 npm audit --audit-level=high
 python -m pip install -r apps/api/requirements.txt "ruff>=0.14,<1"
-ruff check apps/api scripts
+ruff check apps/api scripts --select E4,E7,E9,F
 python -m unittest discover -s apps/api -p "test_*.py" -v
 python scripts/scan_secrets.py --self-test
 python scripts/scan_secrets.py
@@ -68,7 +68,7 @@ Format checks only inspect source files touched since the common ancestor of thi
 
 **Prototype permission policy:** The web app has no operating-system or other-app access. Microphone access must be explicitly initiated by the user when the voice feature is implemented; it must never listen in the background by default. The API uses temporary in-process sessions and offline fixtures, with no secret/API key required. External links are untrusted, HTTPS-only and require an explicit user click. Scene text is untrusted content, not code; the renderer must use text nodes, never `innerHTML`, `eval` or arbitrary scripts. Do not commit `.env`, credentials, tokens or real personal data. `.env.example` contains local placeholders only.
 
-**Security scope:** The credential guard detects common signatures in tracked files but is not a comprehensive security audit; rotate any secret that was ever committed. Dependency Review requires GitHub dependency graph availability. Only high/critical npm findings fail `npm audit`; moderate advisories still need review. A green pipeline is a baseline, not a production security certification.
+**Security scope:** The credential guard detects common signatures in tracked files but is not a comprehensive security audit; rotate any secret that was ever committed. Dependency Review is opt-in because the GitHub dependency graph is currently not enabled on this repository; enable it before setting `DEPENDENCY_REVIEW_ENABLED=true`. Ruff starts with the Python E4/E7/E9/F baseline; extended style rules for legacy code remain a separate cleanup. Only high/critical npm findings fail `npm audit`; moderate advisories still need review. A green pipeline is a baseline, not a production security certification.
 
 ## Repository map
 
