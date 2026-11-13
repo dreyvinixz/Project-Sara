@@ -2,56 +2,146 @@
   "schemaVersion": "0.0",
   "sessionId": "demo_market",
   "revision": 0,
-  "title": "Resumo do mercado — dados demonstrativos",
+  "title": "Panorama de mercado — simulação histórica (maio de 2024)",
   "components": [
     {
       "id": "intro",
       "type": "text",
-      "content": "Cena offline com valores e eventos fictícios. Não representa cotação, notícia ou recomendação atual."
+      "title": "Uma demonstração, não uma cotação",
+      "content": "Esta experiência apresenta uma série totalmente sintética, de 1 a 21 de maio de 2024, com eventos fictícios. Não consulte esses números como IBOV, preços de ativos ou notícias. Alterne o período e selecione eventos para obter explicações contextualizadas."
     },
     {
       "id": "index",
       "type": "time_series",
-      "title": "Índice ilustrativo (sem unidade financeira real)",
-      "unit": "pontos simulados",
+      "title": "Índice sintético SARA (não representa a B3)",
+      "unit": "pontos fictícios",
       "dataStatus": "demo",
-      "asOf": "2024-05-08T17:00:00Z",
+      "asOf": "2024-05-21T17:00:00Z",
+      "description": "21 observações simuladas, inclusive em fins de semana. Valores inventados exclusivamente para a interação do protótipo.",
       "points": [
         {
-          "timestamp": "2024-05-06T17:00:00Z",
+          "timestamp": "2024-05-01T17:00:00Z",
           "value": 100
         },
         {
+          "timestamp": "2024-05-02T17:00:00Z",
+          "value": 101.4
+        },
+        {
+          "timestamp": "2024-05-03T17:00:00Z",
+          "value": 100.6
+        },
+        {
+          "timestamp": "2024-05-04T17:00:00Z",
+          "value": 102.2
+        },
+        {
+          "timestamp": "2024-05-05T17:00:00Z",
+          "value": 101.9
+        },
+        {
+          "timestamp": "2024-05-06T17:00:00Z",
+          "value": 103.1
+        },
+        {
           "timestamp": "2024-05-07T17:00:00Z",
-          "value": 102,
+          "value": 104.5,
           "eventId": "event_a"
         },
         {
           "timestamp": "2024-05-08T17:00:00Z",
-          "value": 99,
+          "value": 102.3
+        },
+        {
+          "timestamp": "2024-05-09T17:00:00Z",
+          "value": 102.9
+        },
+        {
+          "timestamp": "2024-05-10T17:00:00Z",
+          "value": 103.6
+        },
+        {
+          "timestamp": "2024-05-11T17:00:00Z",
+          "value": 105.4,
           "eventId": "event_b"
+        },
+        {
+          "timestamp": "2024-05-12T17:00:00Z",
+          "value": 104.8
+        },
+        {
+          "timestamp": "2024-05-13T17:00:00Z",
+          "value": 106.1
+        },
+        {
+          "timestamp": "2024-05-14T17:00:00Z",
+          "value": 107.2
+        },
+        {
+          "timestamp": "2024-05-15T17:00:00Z",
+          "value": 105.8
+        },
+        {
+          "timestamp": "2024-05-16T17:00:00Z",
+          "value": 106.4
+        },
+        {
+          "timestamp": "2024-05-17T17:00:00Z",
+          "value": 103.9,
+          "eventId": "event_c"
+        },
+        {
+          "timestamp": "2024-05-18T17:00:00Z",
+          "value": 104.6
+        },
+        {
+          "timestamp": "2024-05-19T17:00:00Z",
+          "value": 105.3
+        },
+        {
+          "timestamp": "2024-05-20T17:00:00Z",
+          "value": 106.8,
+          "eventId": "event_d"
+        },
+        {
+          "timestamp": "2024-05-21T17:00:00Z",
+          "value": 107.5
         }
       ]
     },
     {
       "id": "events",
       "type": "news_panel",
-      "title": "Eventos simulados (não são notícias)",
+      "title": "Linha do tempo de eventos simulados",
       "dataStatus": "demo",
       "items": [
         {
           "id": "event_a",
-          "title": "Evento fictício A",
-          "summary": "Exemplo para testar seleção contextual de um evento no gráfico.",
-          "source": "Fixture local",
+          "title": "Simulação: avanço após sinal positivo",
+          "summary": "Evento inteiramente fictício usado para exemplificar a associação de uma alta no gráfico a uma narrativa.",
+          "source": "SARA — fixture sintética",
           "publishedAt": "2024-05-07T17:00:00Z"
         },
         {
           "id": "event_b",
-          "title": "Evento fictício B",
-          "summary": "Segundo evento inventado para validar atualização da explicação.",
-          "source": "Fixture local",
-          "publishedAt": "2024-05-08T17:00:00Z"
+          "title": "Simulação: oscilação com maior volatilidade",
+          "summary": "Cenário inventado para ilustrar que uma mudança diária não prova causalidade nem permite prever o próximo movimento.",
+          "source": "SARA — fixture sintética",
+          "publishedAt": "2024-05-11T17:00:00Z"
+        },
+        {
+          "id": "event_c",
+          "title": "Simulação: correção após sequência positiva",
+          "summary": "Exemplo ilustrativo de queda em relação a um pico anterior. Nenhum fato real de mercado é atribuído a esta data.",
+          "source": "SARA — fixture sintética",
+          "publishedAt": "2024-05-17T17:00:00Z"
+        },
+        {
+          "id": "event_d",
+          "title": "Simulação: recuperação parcial",
+          "summary": "Exemplo demonstrativo de recuperação de valores na reta final da série. Não corresponde a notícia ou preço observado.",
+          "source": "SARA — fixture sintética",
+          "publishedAt": "2024-05-20T17:00:00Z"
         }
       ]
     }
@@ -71,7 +161,7 @@
   "references": [
     {
       "id": "b3_portal",
-      "title": "Portal oficial da B3 — contexto externo, não é fonte dos exemplos fictícios",
+      "title": "B3 — portal institucional (referência externa, não fonte dos dados sintéticos)",
       "url": "https://www.b3.com.br/"
     }
   ]
