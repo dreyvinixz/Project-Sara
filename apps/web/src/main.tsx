@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
+import './accessibility.css';
 
 type SessionState = 'idle' | 'listening' | 'processing' | 'presenting' | 'error';
 
@@ -52,10 +53,11 @@ function App() {
           <h1 id="canvas-title">O que vamos<br /><em>explorar</em> hoje?</h1>
           <p className="canvas-description" aria-live="polite">{copy.detail}</p>
           {session === 'presenting' && <div className="idea-card"><span className="card-symbol">✳</span><div><strong>{prompt}</strong><small>IDEIA ADICIONADA AO WORKSPACE</small></div></div>}
-          {session === 'error' && <button className="retry-button" onClick={() => setSession('idle')}>Tentar novamente</button>}
-          <div className="suggestions" aria-label="Ideias para começar">
-            {['Organizar uma ideia', 'Explorar um tema', 'Criar algo novo'].map((idea) => <button key={idea} onClick={() => { setPrompt(idea); setSession('idle'); }}>{idea}<span aria-hidden="true">↗</span></button>)}
-          </div>
+          {session === 'error' && <button type="button" className="retry-button" onClick={() => setSession('idle')}>Tentar novamente</button>}
+          <fieldset className="suggestions">
+            <legend className="sr-only">Ideias para começar</legend>
+            {['Organizar uma ideia', 'Explorar um tema', 'Criar algo novo'].map((idea) => <button type="button" key={idea} onClick={() => { setPrompt(idea); setSession('idle'); }}>{idea}<span aria-hidden="true">↗</span></button>)}
+          </fieldset>
         </div>
         <div className="canvas-footer"><span><i className="tiny-dot" /> ESPAÇO PESSOAL</span><span>SESSÃO LOCAL</span></div>
       </section>
@@ -81,4 +83,6 @@ function App() {
   </main>;
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Root element was not found');
+createRoot(rootElement).render(<App />);

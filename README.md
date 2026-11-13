@@ -33,6 +33,14 @@ uvicorn app.main:app --app-dir apps/api --reload --host 127.0.0.1 --port 8000
 
 Check the API at `http://127.0.0.1:8000/health`; interactive API docs are at `/docs`.
 
+The API also exposes `POST /sessions`, `POST /sessions/{id}/intents`, `GET /sessions/{id}`, and `GET /sessions/{id}/result`. The initial provider routes market and neural-network demonstration intents to offline fixtures; unsupported intents return a structured error.
+
+Run API tests from the repository root with:
+
+```bash
+python -m unittest discover -s apps/api -p "test_*.py"
+```
+
 ## Repository map
 
 - `apps/web`: React, TypeScript, and Vite user interface.

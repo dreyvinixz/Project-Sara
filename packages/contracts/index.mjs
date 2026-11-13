@@ -2,7 +2,7 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import sceneSchema from './scene-document-v0.schema.json' with { type: 'json' };
 import userActionSchema from './user-action-v0.schema.json' with { type: 'json' };
 
-const ajv = new Ajv2020({ allErrors: true, strict: true, allowUnionTypes: true });
+const ajv = new Ajv2020({ allErrors: true, strict: true, strictRequired: false, allowUnionTypes: true });
 const validateSceneShape = ajv.compile(sceneSchema);
 const validateActionShape = ajv.compile(userActionSchema);
 
@@ -41,9 +41,12 @@ export function validateSceneDocument(document) {
         if (item.referenceId && !referenceIds.has(item.referenceId)) errors.push({ path: `/components/${index}/items/${itemIndex}/referenceId`, message: 'reference does not exist' });
       });
     }
-    if (component.type === 'time_series') component.points.forEach((point, pointIndex) => {
-      if (point.eventId && !eventIds.has(point.eventId)) errors.push({ path: `/components/${index}/points/${pointIndex}/eventId`, message: 'event does not exist' });
-    });
+    if (component.type === 'time_series') {
+      if (component.referenceId && !referenceIds.has(component.referenceId)) errors.push({ path: `/components/${index}/referenceId`, message: 'reference does not exist' });
+      component.points.forEach((point, pointIndex) => {
+        if (point.eventId && !eventIds.has(point.eventId)) errors.push({ path: `/components/${index}/points/${pointIndex}/eventId`, message: 'event does not exist' });
+      });
+    }
     if (component.type === 'scene_3d') {
       if (component.weights.length !== component.layers.length - 1) errors.push({ path: `/components/${index}/weights`, message: 'one matrix is required per adjacent layer pair' });
       component.weights.forEach((matrix, step) => {
@@ -77,7 +80,7 @@ export function validateUserAction(action, scene) {
   const component = scene.components.find(({ id }) => id === action.componentId);
   if (action.sessionId !== scene.sessionId || action.sceneRevision !== scene.revision) errors.push({ path: '/', message: 'session or scene revision is stale' });
   if (!actionDefinition || !component) errors.push({ path: '/', message: 'action or component does not exist in the scene' });
-  else if (actionDefinition.type === 'navigate' || actionDefinition.targetComponentId !== component.id) errors.push({ path: '/componentId', message: 'component is not the target of this action' });
+  else if (actionDefinition.type !== 'navigate' && actionDefinition.targetComponentId !== component.id) errors.push({ path: '/componentId', message: 'component is not the target of this action' });
   return { valid: errors.length === 0, errors };
 }
 

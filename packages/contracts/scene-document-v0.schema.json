@@ -148,6 +148,15 @@
           "type": "string",
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
         },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "referenceId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+        },
         "description": {
           "type": "string",
           "minLength": 1,
@@ -179,7 +188,13 @@
             }
           }
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "dataStatus": { "const": "verified" } }, "required": ["dataStatus"] },
+          "then": { "required": ["asOf", "source", "referenceId"] }
+        }
+      ]
     },
     "newsPanel": {
       "type": "object",
@@ -209,6 +224,10 @@
             "demo",
             "verified"
           ]
+        },
+        "asOf": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
         },
         "items": {
           "type": "array",
@@ -255,7 +274,16 @@
             }
           }
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "dataStatus": { "const": "verified" } }, "required": ["dataStatus"] },
+          "then": {
+            "required": ["asOf"],
+            "properties": { "items": { "type": "array", "items": { "type": "object", "required": ["referenceId"] } } }
+          }
+        }
+      ]
     },
     "scene3d": {
       "type": "object",

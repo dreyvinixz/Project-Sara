@@ -44,10 +44,30 @@ test('rejects HTTP, credential-bearing, and malformed reference URLs', () => {
   }
 });
 
+test('requires traceable provenance for verified datasets', () => {
+  const missing = structuredClone(market);
+  missing.components.find(({ type }) => type === 'time_series').dataStatus = 'verified';
+  assert.equal(validateSceneDocument(missing).valid, false);
+
+  const traceable = structuredClone(market);
+  const series = traceable.components.find(({ type }) => type === 'time_series');
+  series.dataStatus = 'verified';
+  series.source = 'B3';
+  series.referenceId = 'b3_portal';
+  const news = traceable.components.find(({ type }) => type === 'news_panel');
+  news.dataStatus = 'verified';
+  news.asOf = '2024-05-08T17:00:00Z';
+  news.items.forEach((item) => { item.referenceId = 'b3_portal'; });
+  assert.equal(validateSceneDocument(traceable).valid, true);
+});
+
 test('validates user_action shape and assert helper throws for invalid documents', () => {
   const event = { schemaVersion: '0.0', type: 'user_action', sessionId: 'demo_neural', sceneRevision: 0, actionId: 'adjust_network', componentId: 'network', value: 0.7 };
   assert.equal(validateUserAction(event, neural).valid, true);
   assert.equal(validateUserAction({ ...event, componentId: 'lesson' }, neural).valid, false);
+  const navigateEvent = { ...event, sessionId: 'demo_market', actionId: 'open_b3', componentId: 'index' };
+  assert.equal(validateUserAction(navigateEvent, market).valid, true);
+  assert.equal(validateUserAction({ ...navigateEvent, componentId: 'missing' }, market).valid, false);
   assert.equal(validateUserAction({ schemaVersion: '0.0', type: 'user_action', sessionId: 'demo', sceneRevision: -1, actionId: 'bad id', componentId: 'network' }).valid, false);
   assert.throws(() => assertSceneDocument({}), TypeError);
 });

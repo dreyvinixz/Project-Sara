@@ -38,6 +38,7 @@ Em `scene_3d`, `layers = [entradas, ocultas..., saídas]` e `weights[etapa][dest
 - URLs permitidas: apenas `https:`, com hostname válido e sem credenciais embutidas; links são abertos somente por decisão explícita do usuário, com precauções contra tabnabbing (`rel="noopener noreferrer"`).
 - JSON Schema restringe tipos e propriedades. O validador JavaScript faz checagens adicionais de IDs cruzados, matrizes, faixas numéricas e URLs. Dados recebidos por rede devem ser revalidados, não apenas convertidos via TypeScript.
 - `dataStatus:"demo"` sinaliza conteúdo simulado. A fixture de mercado contém **números/eventos inventados**; o link oficial da B3 dá apenas contexto, não prova os eventos. Dados reais precisam de origem verificável, data de atualização (`asOf`) e indicação clara de indisponibilidade.
+- `dataStatus:"verified"` exige `asOf` e proveniência vinculada: séries temporais informam `source` e `referenceId`; cada item de notícias inclui seu `referenceId`. As referências devem apontar para URLs HTTPS válidas sem credenciais embutidas.
 - Nunca expor chaves, dados pessoais, acesso a arquivos locais ou permissões de SO no documento.
 
 ### Testes locais
