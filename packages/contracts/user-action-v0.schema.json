@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "type",
+    "sessionId",
+    "sceneRevision",
+    "actionId",
+    "componentId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.0"
+    },
+    "type": {
+      "const": "user_action"
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "sceneRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actionId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+    },
+    "componentId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+    },
+    "value": {
+      "type": [
+        "number",
+        "string",
+        "boolean",
+        "null"
+      ],
+      "maxLength": 240
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sara:user-action:v0",
+  "title": "SARA user_action v0"
+}
