@@ -95,3 +95,7 @@ Reproduce the deterministic market tests with `npm run test:web` after `npm run 
 - Run `npm run build` for web changes. For API changes, start Uvicorn and check `/health`.
 
 See [`.agents/AI_HANDOFF.md`](.agents/AI_HANDOFF.md) for context intended for any coding assistant.
+
+## Navegador e recursos de voz
+
+O ditado e a leitura em voz alta usam as APIs de fala disponibilizadas pelo navegador, sem chave de API e sem gravar ou enviar arquivos de áudio pela aplicação. O microfone só é iniciado pelo botão **Falar**; **Parar microfone** encerra a captura. A transcrição reconhecida segue como intenção da sessão para a API. O botão **Ouvir explicação** lê o texto da cena e permite interrupção. Se o navegador não oferecer ditado ou negar acesso, o campo de texto continua disponível. O processamento do reconhecimento de fala pode variar conforme navegador e fornecedor; consulte as configurações e a política de privacidade do navegador.

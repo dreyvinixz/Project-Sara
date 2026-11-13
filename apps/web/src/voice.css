@@ -1,0 +1,43 @@
+.voice-button,
+.voice-tools button {
+  background: #202923;
+  border: 1px solid #8fc39a55;
+  border-radius: 3px;
+  color: #c8ddc8;
+  padding: 9px 11px;
+  font:
+    11px "DM Sans",
+    sans-serif;
+  cursor: pointer;
+}
+.voice-button[aria-pressed="true"] {
+  background: #315441;
+  color: #effff0;
+}
+.voice-button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.voice-feedback {
+  min-height: 18px;
+  margin: -12px auto 14px;
+  width: min(720px, 85%);
+  color: #aab8aa;
+  font-size: 11px;
+  text-align: center;
+}
+.voice-tools {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 0 0 15px;
+}
+.voice-tools button:hover,
+.voice-button:hover {
+  border-color: #9ed5a5;
+}
+@media (max-width: 760px) {
+  .voice-feedback {
+    width: 100%;
+  }
+}
