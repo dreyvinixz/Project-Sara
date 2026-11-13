@@ -1,11 +1,18 @@
 type SpeechResult = { isFinal: boolean; 0: { transcript: string } };
-type SpeechEvent = Event & { resultIndex: number; results: ArrayLike<SpeechResult> };
+type SpeechEvent = Event & {
+  resultIndex: number;
+  results: ArrayLike<SpeechResult>;
+};
 export type Recognition = {
-  lang: string; interimResults: boolean; continuous: boolean;
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
   onresult: ((event: SpeechEvent) => void) | null;
   onerror: ((event: Event & { error?: string }) => void) | null;
   onend: (() => void) | null;
-  start(): void; stop(): void; abort(): void;
+  start(): void;
+  stop(): void;
+  abort(): void;
 };
 type RecognitionConstructor = new () => Recognition;
 type SpeechWindow = Window & {
@@ -15,7 +22,8 @@ type SpeechWindow = Window & {
 
 export function createRecognition(): Recognition | null {
   const browser = window as SpeechWindow;
-  const Constructor = browser.SpeechRecognition ?? browser.webkitSpeechRecognition;
+  const Constructor =
+    browser.SpeechRecognition ?? browser.webkitSpeechRecognition;
   if (!Constructor) return null;
   const recognition = new Constructor();
   recognition.lang = 'pt-BR';
@@ -24,10 +32,20 @@ export function createRecognition(): Recognition | null {
   return recognition;
 }
 
-export function sceneNarration(scene: { title?: string; components: Array<Record<string, unknown>> }): string {
+export function sceneNarration(scene: {
+  title?: string;
+  components: Array<Record<string, unknown>>;
+}): string {
   const parts = [scene.title];
   for (const component of scene.components) {
-    for (const key of ['text', 'content', 'title', 'description', 'summary', 'label']) {
+    for (const key of [
+      'text',
+      'content',
+      'title',
+      'description',
+      'summary',
+      'label',
+    ]) {
       const value = component[key];
       if (typeof value === 'string' && value.trim()) parts.push(value.trim());
     }
@@ -38,10 +56,13 @@ export function sceneNarration(scene: { title?: string; components: Array<Record
         const entry = item as Record<string, unknown>;
         for (const key of ['title', 'summary']) {
           const value = entry[key];
-          if (typeof value === 'string' && value.trim()) parts.push(value.trim());
+          if (typeof value === 'string' && value.trim())
+            parts.push(value.trim());
         }
       }
     }
   }
-  return [...new Set(parts.filter((part): part is string => Boolean(part)))].join('. ').slice(0, 3000);
+  return [...new Set(parts.filter((part): part is string => Boolean(part)))]
+    .join('. ')
+    .slice(0, 3000);
 }
