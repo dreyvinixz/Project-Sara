@@ -14,9 +14,7 @@ WEB_EXTENSIONS = {".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".css"}
 
 
 def git(*args: str) -> str:
-    return subprocess.check_output(
-        ["git", *args], cwd=ROOT, text=True
-    ).strip()
+    return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
 def changed_paths() -> list[str]:
@@ -33,11 +31,7 @@ def changed_paths() -> list[str]:
     output = subprocess.check_output(
         ["git", "diff", "--name-only", "-z", ancestor, "HEAD"], cwd=ROOT
     )
-    return [
-        value.decode("utf-8")
-        for value in output.split(b"\x00")
-        if value
-    ]
+    return [value.decode("utf-8") for value in output.split(b"\x00") if value]
 
 
 def check_format(language: str) -> int:
@@ -46,22 +40,25 @@ def check_format(language: str) -> int:
         files = [
             file
             for file in candidates
-            if (
-                file.startswith("apps/web/")
-                or file.startswith("packages/contracts/")
-            )
+            if (file.startswith("apps/web/") or file.startswith("packages/contracts/"))
             and Path(file).suffix in WEB_EXTENSIONS
             and (ROOT / file).is_file()
         ]
-        command = ["npm", "exec", "--", "biome", "format"]
+        biome_cli = subprocess.check_output(
+            [
+                "node",
+                "-p",
+                "require.resolve('@biomejs/biome/bin/biome')",
+            ],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+        command = ["node", biome_cli, "format"]
     else:
         files = [
             file
             for file in candidates
-            if (
-                file.startswith("apps/api/")
-                or file.startswith("scripts/")
-            )
+            if (file.startswith("apps/api/") or file.startswith("scripts/"))
             and file.endswith(".py")
             and (ROOT / file).is_file()
         ]

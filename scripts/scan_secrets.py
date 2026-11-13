@@ -42,11 +42,7 @@ def self_test() -> None:
 
 def tracked_paths() -> list[str]:
     output = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT)
-    return [
-        item.decode("utf-8")
-        for item in output.split(b"\x00")
-        if item
-    ]
+    return [item.decode("utf-8") for item in output.split(b"\x00") if item]
 
 
 def scan() -> int:
@@ -56,9 +52,7 @@ def scan() -> int:
         if not path.is_file():
             continue
         name = path.name
-        if name == ".env" or (
-            name.startswith(".env.") and name != ".env.example"
-        ):
+        if name == ".env" or (name.startswith(".env.") and name != ".env.example"):
             errors.append(f"{relative}: committed environment file")
             continue
         if path.stat().st_size > 5_000_000:

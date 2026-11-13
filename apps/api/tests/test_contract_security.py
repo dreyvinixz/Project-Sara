@@ -12,12 +12,7 @@ from starlette.testclient import TestClient
 from app.main import app, sessions
 from app.scene_validation import validate_scene_document, validate_user_action
 
-FIXTURES = (
-    Path(__file__).resolve().parents[3]
-    / "packages"
-    / "contracts"
-    / "fixtures"
-)
+FIXTURES = Path(__file__).resolve().parents[3] / "packages" / "contracts" / "fixtures"
 
 
 def fixture(name: str) -> dict:
